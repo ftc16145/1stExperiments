@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import org.firstinspires.ftc.teamcode.subsystems.*;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -73,7 +74,7 @@ public class BasicOpMode_Iterative extends OpMode
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         testMotor.setDirection(DcMotor.Direction.FORWARD);
-
+        Drivetrain drive = Drivetrain.init();
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
