@@ -14,7 +14,6 @@ public class Drivetrain {
     double prevY2 = 0;
     public static Drivetrain init( double initX, double initY, double r ){
         return new Drivetrain( initX, initY, r );
-
     }
     private Drivetrain( double initX, double initY, double r ){
         leftFront = hardwareMap.get( DcMotor.class, "leftFront" );
@@ -23,16 +22,17 @@ public class Drivetrain {
         rightBack = hardwareMap.get( DcMotor.class, "leftFront" );
         robot = new VectorObject( initX, initY, r );
         //GYRO TEMP
-        gyro = 5;
+        gyro = 0;
     }
     public void drive( double x, double y, double r ){
+        //https://ftcforum.usfirst.org/forum/ftc-technology/android-studio/6361-mecanum-wheels-drive-code-example
         double lf, rf, lr, rr;
         double x2 = Math.cos(-gyro)*x - Math.sin(-gyro)*y;
         double y2 = Math.sin(-gyro)*x + Math.cos(-gyro)*y;
         x2 = ( Math.abs( x2 - prevX2 ) <= 0.1 ) ? x2 : prevX2 + ( 0.1 * Math.signum( x2 - prevX2 ) );
         y2 = ( Math.abs( y2 - prevY2 ) <= 0.1 ) ? y2 : prevY2 + ( 0.1 * Math.signum( y2 - prevY2 ) );
         double p = Math.hypot( x2, y2 );
-        double rotateAngle = Math.atan2( y2, x2 );
+        double rotateAngle = Math.atan2( y2, x2 ) - (Math.PI / 4);
         lf = p * Math.cos(rotateAngle) + r;
         rf = p * Math.sin(rotateAngle) - r;
         lr = p * Math.sin(rotateAngle) + r;

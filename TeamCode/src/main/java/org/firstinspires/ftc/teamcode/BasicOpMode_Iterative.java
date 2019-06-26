@@ -58,14 +58,14 @@ public class BasicOpMode_Iterative extends OpMode
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor testMotor = null;
-
+    public Drivetrain drive;
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
         telemetry.addData("Status", "Initialized");
-
+        drive = Drivetrain.init( 0, 0, 0);
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
@@ -74,7 +74,6 @@ public class BasicOpMode_Iterative extends OpMode
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         testMotor.setDirection(DcMotor.Direction.FORWARD);
-        Drivetrain drive = Drivetrain.init();
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -107,7 +106,7 @@ public class BasicOpMode_Iterative extends OpMode
 
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
-        double drive = gamepad1.left_stick_y;
+        drive.drive( gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x );
 
 
         // Tank Mode uses one stick to control each wheel.
@@ -116,7 +115,6 @@ public class BasicOpMode_Iterative extends OpMode
         // rightPower = -gamepad1.right_stick_y ;
 
         // Send calculated power to wheels
-        testMotor.setPower(drive);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -129,6 +127,7 @@ public class BasicOpMode_Iterative extends OpMode
     @Override
     public void stop() {
         testMotor.setPower(0);
+        drive.drive( 0, 0, 0 );
     }
 
 }
