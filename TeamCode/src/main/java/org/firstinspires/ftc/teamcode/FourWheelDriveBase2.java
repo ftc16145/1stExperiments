@@ -29,13 +29,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.teamcode.subsystems.*;
+
+import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -51,9 +50,9 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
+@TeleOp(name="Extra Opmode", group="Iterative Opmode")
 
-public class BasicOpMode_Iterative extends OpMode
+public class FourWheelDriveBase2 extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -74,7 +73,7 @@ public class BasicOpMode_Iterative extends OpMode
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         testMotor.setDirection(DcMotor.Direction.FORWARD);
-        drive = Drivetrain.init( 0, 0, 0, Drivetrain.driveType.mecanum );
+        drive = Drivetrain.init( 0, 0, 0, Drivetrain.driveType.fourWheel );
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -108,8 +107,8 @@ public class BasicOpMode_Iterative extends OpMode
 
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
-        double drive = gamepad1.left_stick_y;
-
+        drive.fourWheelTankDrive( gamepad1.left_stick_y, gamepad1.right_stick_y );
+        //drive.fourWheelArcadeDrive( gamepad1.left_stick_x, gamepad1.left_stick_y );
 
         // Tank Mode uses one stick to control each wheel.
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
@@ -117,7 +116,7 @@ public class BasicOpMode_Iterative extends OpMode
         // rightPower = -gamepad1.right_stick_y ;
 
         // Send calculated power to wheels
-        testMotor.setPower(drive);
+
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -130,6 +129,7 @@ public class BasicOpMode_Iterative extends OpMode
     @Override
     public void stop() {
         testMotor.setPower(0);
+        drive.stop();
     }
 
 }

@@ -29,13 +29,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.teamcode.subsystems.*;
+
+import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -51,14 +50,14 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
+@TeleOp(name="Tank Drive", group="Iterative Opmode")
 
-public class BasicOpMode_Iterative extends OpMode
+public class FourWheelDriveBase extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor testMotor = null;
-    public Drivetrain drive;
+    private DcMotor leftFront, leftBack, rightFront, rightBack;
+    //public Drivetrain drive;
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -69,15 +68,22 @@ public class BasicOpMode_Iterative extends OpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        testMotor  = hardwareMap.get(DcMotor.class, "Motor0");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        testMotor.setDirection(DcMotor.Direction.FORWARD);
-        drive = Drivetrain.init( 0, 0, 0, Drivetrain.driveType.mecanum );
+
+        //drive = Drivetrain.init( 0, 0, 0, Drivetrain.driveType.fourWheel );
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
+        leftFront = hardwareMap.get( DcMotor.class, "leftFront" );
+        rightFront = hardwareMap.get( DcMotor.class, "rightFront" );
+        leftBack = hardwareMap.get( DcMotor.class, "leftBack" );
+        rightBack = hardwareMap.get( DcMotor.class, "rightBack" );
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
     }
 
     /*
@@ -94,12 +100,23 @@ public class BasicOpMode_Iterative extends OpMode
     public void start() {
         runtime.reset();
     }
-
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
     @Override
     public void loop() {
+        double left = gamepad1.left_stick_y;
+        double right = gamepad1.right_stick_y;
+        double lf, rf, lr, rr;
+        lf = left;
+        lr = left;
+        rf= right;
+        rr = right;
+        leftFront.setPower(lf);
+        rightFront.setPower(rf);
+        leftBack.setPower(lr);
+        rightBack.setPower(rr);
+
         // Setup a variable for each drive wheel to save power level for telemetry
 
         // drive.drive( gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x );
@@ -108,8 +125,8 @@ public class BasicOpMode_Iterative extends OpMode
 
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
-        double drive = gamepad1.left_stick_y;
-
+        //drive.fourWheelTankDrive( gamepad1.left_stick_y, gamepad1.right_stick_y );
+        //drive.fourWheelArcadeDrive( gamepad1.left_stick_x, gamepad1.left_stick_y );
 
         // Tank Mode uses one stick to control each wheel.
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
@@ -117,11 +134,11 @@ public class BasicOpMode_Iterative extends OpMode
         // rightPower = -gamepad1.right_stick_y ;
 
         // Send calculated power to wheels
-        testMotor.setPower(drive);
+
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "testMotor (%.2f)", drive);
+        //telemetry.addData("Motors", "testMotor (%.2f)", drive);
     }
 
     /*
@@ -129,7 +146,11 @@ public class BasicOpMode_Iterative extends OpMode
      */
     @Override
     public void stop() {
-        testMotor.setPower(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+      //  drive.stop();
     }
 
 }
