@@ -48,9 +48,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Arc Drive", group="Iterative Opmode")
+@TeleOp(name="Tank Drive", group="Iterative Opmode")
 
-public class FourWheelDriveBase2 extends OpMode
+public class TankDrive extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -103,13 +103,13 @@ public class FourWheelDriveBase2 extends OpMode
      */
     @Override
     public void loop() {
-        double y = gamepad1.left_stick_y;
-        double x = -gamepad1.left_stick_x;
+        double left = gamepad1.left_stick_y;
+        double right = gamepad1.right_stick_y;
         double lf, rf, lr, rr;
-        lf = y + x;
-        lr = lf;
-        rf = y - x;
-        rr = rf;
+        lf = left;
+        lr = left;
+        rf= right;
+        rr = right;
         leftFront.setPower(lf);
         rightFront.setPower(rf);
         leftBack.setPower(lr);
@@ -148,7 +148,7 @@ public class FourWheelDriveBase2 extends OpMode
         rightFront.setPower(0);
         leftBack.setPower(0);
         rightBack.setPower(0);
-        //  drive.stop();
+      //  drive.stop();
     }
 
 }

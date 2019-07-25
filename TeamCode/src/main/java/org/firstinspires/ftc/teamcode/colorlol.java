@@ -29,10 +29,16 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -48,13 +54,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Tank Drive", group="Iterative Opmode")
+@Autonomous(name="Color", group="Iterative Opmode")
 
-public class FourWheelDriveBase extends OpMode
+public class colorlol extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFront, leftBack, rightFront, rightBack;
+    private Servo armClaw;
+    private ColorSensor colorSensor;
+    boolean colorFound = false;
     //public Drivetrain drive;
     /*
      * Code to run ONCE when the driver hits INIT
@@ -78,10 +87,15 @@ public class FourWheelDriveBase extends OpMode
         rightFront = hardwareMap.get( DcMotor.class, "rightFront" );
         leftBack = hardwareMap.get( DcMotor.class, "leftBack" );
         rightBack = hardwareMap.get( DcMotor.class, "rightBack" );
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
-        rightBack.setDirection(DcMotor.Direction.REVERSE);
+        //armClaw = hardwareMap.get( Servo.class, "arm");
+        // I2C Port
+        colorSensor = hardwareMap.get( ColorSensor.class, "color" );
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        colorFound = false;
+
     }
 
     /*
@@ -103,18 +117,30 @@ public class FourWheelDriveBase extends OpMode
      */
     @Override
     public void loop() {
-        double left = gamepad1.left_stick_y;
-        double right = gamepad1.right_stick_y;
-        double lf, rf, lr, rr;
-        lf = left;
-        lr = left;
-        rf= right;
-        rr = right;
-        leftFront.setPower(lf);
-        rightFront.setPower(rf);
-        leftBack.setPower(lr);
-        rightBack.setPower(rr);
-
+        // colorSesnor.blue() reads RG BLUE of the sensor
+        // if it goes above 90, we are DEFINITELY above the blue tape from testing
+        if( colorSensor.blue() > 90 ){
+            colorFound = true;
+        }
+        // if the color is NOT found, move
+        if( !colorFound ) {
+            leftFront.setPower(.25);
+            rightFront.setPower(.25);
+            leftBack.setPower(.25);
+            rightBack.setPower(.25);
+        } else {
+            // Once found, STOP
+            leftFront.setPower(0);
+            rightFront.setPower(0);
+            leftBack.setPower(0);
+            rightBack.setPower(0);
+        }
+        // Read RGB values to driver station
+        telemetry.addLine()
+                .addData("a", colorSensor.alpha())
+                .addData("r", colorSensor.red())
+                .addData("g", colorSensor.green())
+                .addData("b", colorSensor.blue());
         // Setup a variable for each drive wheel to save power level for telemetry
 
         // drive.drive( gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x );
@@ -148,7 +174,7 @@ public class FourWheelDriveBase extends OpMode
         rightFront.setPower(0);
         leftBack.setPower(0);
         rightBack.setPower(0);
-      //  drive.stop();
+        //  drive.stop();
     }
 
 }
